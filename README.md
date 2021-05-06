@@ -1,6 +1,6 @@
 # TQS_IndividualProj
 
-  ** Simple WebSite for AirQuality Search **
+  **Simple WebSite for AirQuality Search**
 
 ## Some Key Points:
   -> Must have Cache  
