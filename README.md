@@ -5,7 +5,7 @@
 ## Some Key Points:
   > Must use SonarQube for code analysis
   > 
-  > Must have Cache  
+  > Must have Simple Cache   
   > 
   > Must have tests to guarantee software quality
   > 
