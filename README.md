@@ -10,6 +10,6 @@
   > Must have tests to guarantee software quality
   > 
 
-  
+  **Author: Fábio Carmelino**
   
   - Licenciatura em Engenharia Informática, Universidade de Aveiro   (2020/2021)
