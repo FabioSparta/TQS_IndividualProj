@@ -35,14 +35,12 @@ public class SimpleCacheManager {
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                 }
-                //System.out.println("Manager Passing through..!");
                 CleanUpOld();
             }
         });
 
         t.setDaemon(true);
         t.start();
-
     }
 
     public int getMisses() { return misses; }

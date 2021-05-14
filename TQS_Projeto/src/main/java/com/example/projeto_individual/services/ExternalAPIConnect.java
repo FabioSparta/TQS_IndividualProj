@@ -8,6 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class ExternalAPIConnect {
+    // EXTERNAL AIR QUALITY API WEBSITE: https://aqicn.org/api/
 
     @Value("${api.key}")
     private String token;
@@ -18,8 +19,7 @@ public class ExternalAPIConnect {
         restTemplate = new RestTemplate();
     }
 
-    public ResponseEntity request(String request) {
-        System.out.println(baseUrl + request +"/?token=" + token);
+    public ResponseEntity<String> request(String request) {
         ResponseEntity<String> response = restTemplate.getForEntity(baseUrl + request +"/?token=" + token, String.class);
         return response;
     }

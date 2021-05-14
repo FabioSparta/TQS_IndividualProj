@@ -59,7 +59,7 @@ public class RestControllerUnitTest {
     // getCityAQ Controller - 6 tests
 
     @Test
-    public void whenNoCacheButCityExists_thenUseExternalAPIAndJsonToEntity__AndStatus200() throws Exception {
+    void whenNoCacheButCityExists_thenUseExternalAPIAndJsonToEntity__AndStatus200() throws Exception {
 
         // Expectations
         when(simpleCacheManager.findbyCityOrQuery(Mockito.anyString(),Mockito.anyString())).thenReturn(null);
@@ -76,7 +76,7 @@ public class RestControllerUnitTest {
     }
 
     @Test
-    public void whenCacheAndCityExists_thenUseCache_AndStatus200() throws Exception {
+    void whenCacheAndCityExists_thenUseCache_AndStatus200() throws Exception {
 
         // Expectations
         when(simpleCacheManager.findbyCityOrQuery(Mockito.anyString(),Mockito.anyString())).thenReturn(mockCAQ);
@@ -90,7 +90,7 @@ public class RestControllerUnitTest {
     }
 
     @Test
-    public void whenNonExistentCity_thenStatus404() throws Exception {
+    void whenNonExistentCity_thenStatus404() throws Exception {
 
         // Expectations
         when(simpleCacheManager.findbyCityOrQuery(Mockito.any(),Mockito.any())).thenReturn(null);
@@ -107,7 +107,7 @@ public class RestControllerUnitTest {
     }
 
     @Test
-    public void whenValidDateFormatAndCityExists_thenStatus200() throws Exception {
+    void whenValidDateFormatAndCityExists_thenStatus200() throws Exception {
 
         // Expectations
         when(simpleCacheManager.findbyCityOrQuery(Mockito.anyString(),Mockito.anyString())).thenReturn(mockCAQ);
@@ -147,7 +147,7 @@ public class RestControllerUnitTest {
     // getCityFromCoords Controller - 6 tests
 
     @Test
-    public void whenNoCacheButCoords_thenUseExternalAPIAndJsonToEntity__AndStatus200() throws Exception {
+    void whenNoCacheButCoords_thenUseExternalAPIAndJsonToEntity__AndStatus200() throws Exception {
 
         // Expectations
         when(simpleCacheManager.findbyCoords(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(null);
@@ -164,7 +164,7 @@ public class RestControllerUnitTest {
     }
 
     @Test
-    public void whenCacheAndCoords_thenUseCache_AndStatus200() throws Exception {
+    void whenCacheAndCoords_thenUseCache_AndStatus200() throws Exception {
 
         // Expectations
         when(simpleCacheManager.findbyCoords(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(mockCAQ);
@@ -182,7 +182,7 @@ public class RestControllerUnitTest {
 
 
     @Test
-    public void whenValidDateFormatAndCoords_thenStatus200() throws Exception {
+    void whenValidDateFormatAndCoords_thenStatus200() throws Exception {
 
         // Expectations
         when(simpleCacheManager.findbyCoords(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(mockCAQ);

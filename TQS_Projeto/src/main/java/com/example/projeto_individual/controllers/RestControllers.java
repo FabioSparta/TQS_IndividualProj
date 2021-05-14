@@ -15,14 +15,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 @RestController
 public class RestControllers {
-    // EXTERNAL AIR QUALITY API WEBSITE: https://aqicn.org/api/
-    // My Token: 6767c09a8ffb49fd6ec3be10d592e6b634812f24
-    // Example 1: http://localhost:8081/city?city_name=London?date=2021-05-09
-    // Example 2: http://localhost:8081/coords?latitude=40&longitude=35date=2021-05-09
+    // Example Controller 1: http://localhost:8081/city?city_name=Paris&date=2021-05-09
+    // Example Controller 2: http://localhost:8081/coords?latitude=40&longitude=35&date=2021-05-09
+    // Example Controller 3: http://localhost:8081/cacheStatistics
 
     @Autowired
     ExternalAPIConnect AirQualityAPI;
@@ -33,11 +34,14 @@ public class RestControllers {
     @Autowired
     JsonToEntity jsonToEntity;
 
+    Logger logger = Logger.getLogger(RestControllers.class.getName());
 
     @GetMapping(value = "/city")
     public ResponseEntity<Object> getCityAQ
             (@RequestParam String city_name, @RequestParam(required = false) String date ) throws IOException {
+
         city_name = city_name.toLowerCase().replace(" ","");
+
         // Verify Date
         if(date != null && !validateDateFormat(date))
               return new ResponseEntity<>("Invalid Date Format. Use: yyyy-mm-dd.", HttpStatus.BAD_REQUEST);
@@ -45,7 +49,7 @@ public class RestControllers {
         // Check Cache
         CityAirQuality caq= cacheManager.findbyCityOrQuery(city_name,city_name);
         if(caq != null){
-            System.out.println("Found it via cache!");
+            logger.log(Level.INFO,"Requested Coords: "+caq.getQuery()+"; Found in Cache: Yes ");
             return new ResponseEntity<>(caq.customizedResponse(date), HttpStatus.OK);
         }
 
@@ -54,14 +58,17 @@ public class RestControllers {
 
         // Found
         if(response.getStatusCode().equals(HttpStatus.OK)){
-            if(response.getBody().contains("Unknown station")) // Necessary cus the API returns 200 even when city is not found
+            String body =  response.getBody();
+            if(body == null || body.contains("Unknown station"))
                 return new ResponseEntity<>("City not found.", HttpStatus.NOT_FOUND);
+
             return genObjectAndReply(response,city_name,date);
         }
 
         // Not Found
         return new ResponseEntity<>("Failed to get response from External API.", HttpStatus.SERVICE_UNAVAILABLE);
     }
+
 
     @GetMapping(value = "/coords")
     public ResponseEntity<Object> getCityFromCoords
@@ -84,7 +91,7 @@ public class RestControllers {
         // Check Cache
         CityAirQuality caq= cacheManager.findbyCoords(lat,lon,query);
         if(caq != null){
-            System.out.println("Found it via cache!");
+            logger.log(Level.INFO,"Request: "+caq.getQuery()+"; Found in Cache: Yes ");
             return new ResponseEntity<>(caq.customizedResponse(date), HttpStatus.OK);
         }
 
@@ -99,6 +106,7 @@ public class RestControllers {
         return new ResponseEntity<>("Failed to get response from External API.", HttpStatus.SERVICE_UNAVAILABLE);
     }
 
+
     @GetMapping(value = "/cacheStatistics")
     public ResponseEntity<Object> getCacheStatistics(){
         int hits= cacheManager.getHits();
@@ -109,7 +117,7 @@ public class RestControllers {
         answer.put("hits",hits);
         answer.put("misses",misses);
         answer.put("number_of_requests",total);
-
+        logger.log(Level.INFO,"A Request for Cache's Statistics was done.");
         return new ResponseEntity<>(answer,HttpStatus.OK);
 
     }
@@ -117,8 +125,8 @@ public class RestControllers {
 
 
     public ResponseEntity<Object> genObjectAndReply(ResponseEntity<String> response,String query,String date) throws IOException {
-        System.out.println("found it via External API!");
         CityAirQuality caq = jsonToEntity.transform(response.getBody(),query);
+        logger.log(Level.INFO,"Request: "+caq.getQuery()+"; Found in Cache: No ");
         return new ResponseEntity<>(caq.customizedResponse(date), HttpStatus.OK);
     }
 

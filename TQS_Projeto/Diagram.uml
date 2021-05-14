@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.example.projeto_individual.controllers.RestControllers</OriginalElement>
+  <nodes>
+    <node x="97.68579931972786" y="188.0">com.example.projeto_individual.entities.CityAirQuality</node>
+    <node x="65.76913265306118" y="99.0">com.example.projeto_individual.entities.AirComponent</node>
+    <node x="500.55467687074827" y="445.0">com.example.projeto_individual.services.ExternalAPIConnect</node>
+    <node x="257.0546768707483" y="524.0">com.example.projeto_individual.controllers.RestControllers</node>
+    <node x="531.5" y="99.0">com.example.projeto_individual.repositories.DayValuesRepository</node>
+    <node x="0.0" y="445.0">com.example.projeto_individual.services.JsonToEntity</node>
+    <node x="155.0" y="277.0">com.example.projeto_individual.repositories.CityAirQualityRepository</node>
+    <node x="96.18251133786848" y="0.0">com.example.projeto_individual.entities.DayValues</node>
+    <node x="357.30467687074827" y="366.0">com.example.projeto_individual.services.SimpleCacheManager</node>
+    <node x="407.0" y="188.0">com.example.projeto_individual.repositories.AirComponentRepository</node>
+  </nodes>
+  <notes />
+  <edges />
+  <settings layout="Hierarchic Group" zoom="1.0" x="358.0" y="276.5" />
+  <SelectedNodes>
+    <node>com.example.projeto_individual.controllers.RestControllers</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Inner Classes</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

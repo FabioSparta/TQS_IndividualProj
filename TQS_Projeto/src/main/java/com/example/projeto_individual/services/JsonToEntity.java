@@ -47,33 +47,36 @@ public class JsonToEntity {
         cacheManager.save(caq);
 
         // Components Qty For Day
-        Iterator<Map.Entry<String, JsonNode>> components = jsonNode.get("forecast").get("daily").fields();
+        JsonNode compNode =jsonNode.get("forecast").get("daily");
 
-        while (components.hasNext()){
-            AirComponent ac = new AirComponent();
-            Map.Entry<String, JsonNode> entry = components.next();
-            ac.setName(entry.getKey());
+        if(compNode!= null){
+            Iterator<Map.Entry<String, JsonNode>> components = jsonNode.get("forecast").get("daily").fields();
 
-            // Save AirComponent & Add to List
-            cacheManager.save(ac);
-            caq.getAirComponentList().add(ac);
+            while (components.hasNext()){
+                AirComponent ac = new AirComponent();
+                Map.Entry<String, JsonNode> entry = components.next();
+                ac.setName(entry.getKey());
 
-            Iterator<JsonNode> daysList = entry.getValue().elements();
-            while(daysList.hasNext()){
-                JsonNode node = daysList.next();
-                DayValues d = new DayValues();
-                d.setAvg(node.get("avg").asInt());
-                d.setMin(node.get("min").asInt());
-                d.setMax(node.get("max").asInt());
+                // Save AirComponent & Add to List
+                cacheManager.save(ac);
+                caq.getAirComponentList().add(ac);
 
-                // Save Day & Add to List
-                cacheManager.save(d);
-                ac.getDayMap().put(node.get("day").asText(),d);
+                Iterator<JsonNode> daysList = entry.getValue().elements();
+                while(daysList.hasNext()){
+                    JsonNode node = daysList.next();
+                    DayValues d = new DayValues();
+                    d.setAvg(node.get("avg").asInt());
+                    d.setMin(node.get("min").asInt());
+                    d.setMax(node.get("max").asInt());
+
+                    // Save Day & Add to List
+                    cacheManager.save(d);
+                    ac.getDayMap().put(node.get("day").asText(),d);
+                }
+                cacheManager.save(ac);
             }
-            cacheManager.save(ac);
+            cacheManager.save(caq);
         }
-        cacheManager.save(caq);
-        System.out.println(caq.toString());
         return caq;
     }
 

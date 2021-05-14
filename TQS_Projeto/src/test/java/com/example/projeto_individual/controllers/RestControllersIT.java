@@ -21,7 +21,7 @@ class RestControllersIT {
     // getCityAQ Controller - 4 tests
 
     @Test
-    void whenCityNameExists_thenReturnCityTodayForecast() {
+        void whenCityNameExists_thenReturnCityTodayForecast() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String expected_date = LocalDate.now().format(formatter);
         String expected_city = "New York";
