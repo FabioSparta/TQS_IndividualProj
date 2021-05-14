@@ -26,20 +26,23 @@
         }
         .bgwhite2{
             border-radius: 25px;
-            background: rgba(211, 211, 211, 0.55);
-            backdrop-filter: blur(10px);
+            background: rgba(211, 211, 211, 0.3);
+            backdrop-filter: blur(4px);
+        }
+        .xerror{
+            margin-top: 10px;
+            color:red;
         }
 
-
+        .temporary_glow{
+            background-color: lightseagreen;
+        }
 
         body {
-            background: url("/images/wp2.jpg") repeat;
+            background:url("/images/wp2.jpg") repeat fixed;
+            overflow:hidden;
             background-size: cover;
             background-blend-mode: lighten;
-        }
-
-        .inputs{
-            background-color: rgba(0, 0, 0, 0.8);
         }
 
     </style>
@@ -55,7 +58,7 @@
 
 <div class="w3-row-padding w3-center w3-margin-top">
     <div class="w3-third">
-        <div class="w3-card w3-container bgwhite" style="min-height:280px">
+        <div class="w3-card w3-container bgwhite" style="min-height:295px">
             <h3> Enter A City Of Your Choice!  </h3><br>
             <div class="input-group rounded">
                 <input id="city" type="search" class="form-control rounded" placeholder="Search" aria-label="Search"
@@ -63,6 +66,7 @@
                 <span ><button id="getCityInfo" type="submit" class="btn btn-info"><i class="fas fa-search"></i>
                 </button></span>
             </div>
+            <span class="xerror" id="searchbox_err"></span>
             <hr>
             <h3>No ideas? Choose One Of These!</h3>
             <div class="input-group rounded">
@@ -72,19 +76,19 @@
                 <option value="Porto">Porto</option>
                 <option value="newyork">New York</option>
                 <option value="Washington">Washington</option>
+                <option value="Paris">Paris</option>
+                <option value="Madrid">Madrid</option>
                 <option value="Tokyo">Tokyo</option>
-                <option value="Osaka">Osaka</option>
-                <option value="Kyoto">Kyoto</option>
             </select>
             <span><button id="getCityInfo2" type="submit" class="btn btn-info"> GO </button></span>
             </div>
+            <span class="xerror" id="select_err"></span>
             </div>
     </div>
 
     <div class="w3-third ">
-        <div class="w3-card w3-container bgwhite" style="min-height:280px">
+        <div class="w3-card w3-container bgwhite" style="min-height:295px">
             <h3>Search by Coordinates!</h3><br>
-            <form>
                 <div class="form-group row">
                     <label for="latitude" class="col-sm-3 col-form-label">Latitude: </label>
                     <div class="col-sm-9">
@@ -102,12 +106,12 @@
                 <div class="form-group row">
                 <span><button id="coordsSearch" type="submit" class="btn btn-info"> GO </button></span>
                 </div>
-            </form>
+                <span class="xerror" id="coords_err"></span>
         </div>
     </div>
 
     <div class="w3-third ">
-        <div id="days" class="w3-card w3-container bgwhite" style="min-height:280px">
+        <div id="days" class="w3-card w3-container bgwhite" style="min-height:295px">
             <h3>Select A Date For Your Forecast !</h3>
         </div>
     </div>
@@ -115,11 +119,12 @@
 
 <!-- RESULTS SECTION  -->
 <br>
-
-<div class="bgwhite"  style="padding: 10px 120px 15px 120px;">
+<div class="bgwhite2"  style=" margin:auto ; max-height: 75px;max-width: 300px">
     <h1 style="text-align: center"> SEARCH RESULTS: </h1>
     <div style="text-align: center"><input id="clearResults" class="btn btn-info" type="reset" value="Clear"></div>
-    <br>
+</div>
+<br>
+<div   style="padding: 10px 160px 15px 160px;">
     <div id="results" ></div>
 </div>
 

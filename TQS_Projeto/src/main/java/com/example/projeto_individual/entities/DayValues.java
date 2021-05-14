@@ -16,7 +16,7 @@ public class DayValues {
     private int min;
     private int avg;
 
-    public DayValues() { }
+    public DayValues() { /* Constructor*/ }
 
     // GETTERS AND SETTERS
     public int getId() { return id; }
@@ -27,4 +27,13 @@ public class DayValues {
     public void setMin(int min) { this.min = min; }
     public int getAvg() { return avg; }
     public void setAvg(int avg) { this.avg = avg; }
+
+    @Override
+    public String toString() {
+        return "DayValues{" +
+                "max=" + max +
+                ", min=" + min +
+                ", avg=" + avg +
+                '}';
+    }
 }

@@ -1,20 +1,20 @@
 package com.example.projeto_individual.controllers;
 
 import com.example.projeto_individual.entities.CityAirQuality;
-import com.example.projeto_individual.repositories.CityAirQualityRepository;
+import com.example.projeto_individual.services.ExternalAPIConnect;
 import com.example.projeto_individual.services.JsonToEntity;
 import com.example.projeto_individual.services.SimpleCacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
@@ -24,8 +24,8 @@ public class RestControllers {
     // Example 1: http://localhost:8081/city?city_name=London?date=2021-05-09
     // Example 2: http://localhost:8081/coords?latitude=40&longitude=35date=2021-05-09
 
-    @Value("${api.key}")
-    private String apiKey;
+    @Autowired
+    ExternalAPIConnect AirQualityAPI;
 
     @Autowired
     SimpleCacheManager cacheManager;
@@ -33,37 +33,34 @@ public class RestControllers {
     @Autowired
     JsonToEntity jsonToEntity;
 
-    @Autowired
-    CityAirQualityRepository CAQRepository;
-
 
     @GetMapping(value = "/city")
     public ResponseEntity<Object> getCityAQ
             (@RequestParam String city_name, @RequestParam(required = false) String date ) throws IOException {
         city_name = city_name.toLowerCase().replace(" ","");
         // Verify Date
-        if(date != null)
-          if(!validateDateFormat(date))
+        if(date != null && !validateDateFormat(date))
               return new ResponseEntity<>("Invalid Date Format. Use: yyyy-mm-dd.", HttpStatus.BAD_REQUEST);
 
         // Check Cache
-        CityAirQuality caq= CAQRepository.findByNormalizedCityOrQuery(city_name,city_name);
-        if(caq != null)
-            return updateCacheAndReply(caq,date);
-
+        CityAirQuality caq= cacheManager.findbyCityOrQuery(city_name,city_name);
+        if(caq != null){
+            System.out.println("Found it via cache!");
+            return new ResponseEntity<>(caq.customizedResponse(date), HttpStatus.OK);
+        }
 
         // No Cache => Use External API
-        RestTemplate restTemplate = new RestTemplate();
-        String baseUrl = "https://api.waqi.info/feed/";
-        ResponseEntity<String> response = restTemplate.getForEntity(baseUrl + city_name +"/?token=" + apiKey , String.class);
+        ResponseEntity<String> response = AirQualityAPI.request(city_name);
 
         // Found
         if(response.getStatusCode().equals(HttpStatus.OK)){
+            if(response.getBody().contains("Unknown station")) // Necessary cus the API returns 200 even when city is not found
+                return new ResponseEntity<>("City not found.", HttpStatus.NOT_FOUND);
             return genObjectAndReply(response,city_name,date);
         }
 
         // Not Found
-        return new ResponseEntity<>("City not found.", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Failed to get response from External API.", HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @GetMapping(value = "/coords")
@@ -76,9 +73,8 @@ public class RestControllers {
 
 
         // Verify Date
-        if(date != null)
-            if(!validateDateFormat(date))
-                return new ResponseEntity<>("Invalid Date Format. Use: yyyy-mm-dd.", HttpStatus.NOT_FOUND);
+        if(date != null && !validateDateFormat(date))
+                return new ResponseEntity<>("Invalid Date Format. Use: yyyy-mm-dd.", HttpStatus.BAD_REQUEST);
 
 
         String query = latitude + ";" + longitude;
@@ -86,42 +82,45 @@ public class RestControllers {
         double lon = Double.parseDouble(longitude.replace(",","."));
 
         // Check Cache
-        CityAirQuality caq= CAQRepository.findByLatitudeAndLongitude(lat,lon,query);
-        if(caq != null)
-           return updateCacheAndReply(caq,date);
-
+        CityAirQuality caq= cacheManager.findbyCoords(lat,lon,query);
+        if(caq != null){
+            System.out.println("Found it via cache!");
+            return new ResponseEntity<>(caq.customizedResponse(date), HttpStatus.OK);
+        }
 
         // No Cache => Use External API
-        RestTemplate restTemplate = new RestTemplate();
-        String baseUrl = "https://api.waqi.info/feed/geo:";
-        ResponseEntity<String> response = restTemplate.getForEntity(baseUrl + lat + ";" + lon +"/?token=" + apiKey , String.class);
+        ResponseEntity<String> response = AirQualityAPI.request("geo:" + lat + ";" + lon );
 
         // Found
         if(response.getStatusCode().equals(HttpStatus.OK))
             return genObjectAndReply(response,query,date);
 
         // Not Found
-        return new ResponseEntity<>("City not found.", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Failed to get response from External API.", HttpStatus.SERVICE_UNAVAILABLE);
     }
 
+    @GetMapping(value = "/cacheStatistics")
+    public ResponseEntity<Object> getCacheStatistics(){
+        int hits= cacheManager.getHits();
+        int misses = cacheManager.getMisses();
+        int total = hits + misses;
+
+        Map<String,Integer> answer = new HashMap<>();
+        answer.put("hits",hits);
+        answer.put("misses",misses);
+        answer.put("number_of_requests",total);
+
+        return new ResponseEntity<>(answer,HttpStatus.OK);
+
+    }
 
 
 
     public ResponseEntity<Object> genObjectAndReply(ResponseEntity<String> response,String query,String date) throws IOException {
         System.out.println("found it via External API!");
         CityAirQuality caq = jsonToEntity.transform(response.getBody(),query);
-        cacheManager.setHits(cacheManager.getMisses()+1);
         return new ResponseEntity<>(caq.customizedResponse(date), HttpStatus.OK);
     }
-
-    public ResponseEntity<Object> updateCacheAndReply( CityAirQuality caq, String date)  {
-        System.out.println("Found it via cache!");
-        caq.setLastAccess(System.currentTimeMillis());
-        CAQRepository.save(caq);
-        cacheManager.setMisses(cacheManager.getMisses()+1);
-        return new ResponseEntity<>(caq.customizedResponse(date), HttpStatus.OK);
-    }
-
 
     public boolean validateDateFormat(String dateToValdate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");

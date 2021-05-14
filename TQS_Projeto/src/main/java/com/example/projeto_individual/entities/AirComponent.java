@@ -19,7 +19,7 @@ public class AirComponent {
     @JoinColumn(name = "air_component_id")
     private Map<String, DayValues> dayMap = new HashMap<>();
 
-    public AirComponent() { }
+    public AirComponent() {/* Constructor */ }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -27,4 +27,12 @@ public class AirComponent {
     public void setName(String name) { this.name = name; }
     public Map<String, DayValues> getDayMap() { return dayMap; }
     public void setDayMap(Map<String, DayValues> dayList) { this.dayMap = dayList; }
+
+    @Override
+    public String toString() {
+        return "AirComponent{" +
+                "name='" + name + '\'' +
+                ", dayMap=" + dayMap.toString() +
+                '}';
+    }
 }

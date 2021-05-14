@@ -2,8 +2,6 @@ package com.example.projeto_individual.entities;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.sql.Delete;
-
 import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -18,10 +16,11 @@ public class CityAirQuality {
 
     private String city;
     private String query;
+    private String normalizedCity;
+    private String link;
     private double latitude;
     private double longitude;
-    private String normalizedCity;
-    private double aqi; //air quality indice
+    private double aqi; //air quality index
     private long lastAccess;
     private long expiration;
 
@@ -31,9 +30,9 @@ public class CityAirQuality {
     private List<AirComponent> airComponentList = new ArrayList<>();
 
 
-    public CityAirQuality() { }
+    public CityAirQuality() { /* Constructor */ }
 
-    // Getters
+    // Getters & Setters
     public int getId() { return id; }
     public String getCity() { return city; }
     public double getLatitude() { return latitude; }
@@ -42,16 +41,10 @@ public class CityAirQuality {
     public long getLastAccess() { return lastAccess; }
     public String getQuery() { return query; }
     public long getExpiration() { return expiration; }
-
-
     public String getNormalizedCity() { return normalizedCity; }
-
-    public void setNormalizedCity(String normalizedCity) { this.normalizedCity = normalizedCity; }
-
     public List<AirComponent> getAirComponentList() { return airComponentList; }
-    public void setAirComponentList(List<AirComponent> airComponentList) { this.airComponentList = airComponentList; }
+    public String getLink() { return link; }
 
-    //Setters
     public void setExpiration(long expiration) { this.expiration = expiration; }
     public void setQuery(String query) { this.query = query; }
     public void setLastAccess(long ttl) { this.lastAccess = ttl; }
@@ -60,6 +53,9 @@ public class CityAirQuality {
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
     public void setAqi(double aqi) { this.aqi = aqi; }
+    public void setNormalizedCity(String normalizedCity) { this.normalizedCity = normalizedCity; }
+    public void setAirComponentList(List<AirComponent> airComponentList) { this.airComponentList = airComponentList; }
+    public void setLink(String link) { this.link = link; }
 
     public Map<String,Object> customizedResponse(String date){
 
@@ -80,6 +76,7 @@ public class CityAirQuality {
 
         Map<String, Object> map = new HashMap<>();
         map.put("city", this.city);
+        map.put("link",this.link);
         map.put("aqi", ftoday.equals(date) ? this.aqi : "");
         map.put("date",finalDate);
         map.put("latitude", this.latitude);
@@ -91,15 +88,14 @@ public class CityAirQuality {
     @Override
     public String toString() {
         return "CityAirQuality{" +
-                "id=" + id +
-                ", city='" + city + '\'' +
+                "city='" + city + '\'' +
                 ", query='" + query + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", aqi=" + aqi +
                 ", lastAccess=" + lastAccess +
                 ", expiration=" + expiration +
-                ", airComponentList=" + airComponentList +
+                ", airComponentList=" + airComponentList.toString() +
                 '}';
     }
 }

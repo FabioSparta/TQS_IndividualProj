@@ -1,8 +1,16 @@
+function temporaryglow() {
+    $(".caq_info").addClass('temporary_glow');
+    setTimeout(function(){
+        $(".caq_info").removeClass('temporary_glow');
+    }, 1100);
+}
+
 GET: $(document).ready(
     function () {  // REQUEST FROM SEARCH BOX
         $("#getCityInfo").click(function (event) {
             event.preventDefault();
             ajaxGet();
+            $(".xerror").text("");
         });
 
         // DO GET
@@ -13,9 +21,10 @@ GET: $(document).ready(
                 success: function (caq) {
                     console.log("Success: ", caq);
                     buildCard(caq);
+                    temporaryglow();
                 },
                 error: function (e) {
-                    $("#getResultDiv").html("<strong>Failed to Load Rooms</strong>");
+                    $("#searchbox_err").text(e.responseText);
                     console.log("ERROR: ", e);
                 }
             });
@@ -28,6 +37,7 @@ GET: $(document).ready(
         $("#getCityInfo2").click(function (event) {
             event.preventDefault();
             ajaxGet();
+            $(".xerror").text("");
         });
 
         // DO GET
@@ -38,9 +48,10 @@ GET: $(document).ready(
                 success: function (caq) {
                     console.log("Success: ", caq);
                      buildCard(caq);
+                    temporaryglow();
                 },
                 error: function (e) {
-                    $("#getResultDiv").html("<strong>Failed to Load Rooms</strong>");
+                    $("#select_err").text(e.responseText);
                     console.log("ERROR: ", e);
                 }
             });
@@ -53,6 +64,7 @@ GET: $(document).ready(
         $("#coordsSearch").click(function (event) {
             event.preventDefault();
             ajaxGet();
+            $(".xerror").text("");
         });
 
         // DO GET
@@ -63,9 +75,10 @@ GET: $(document).ready(
                 success: function (caq) {
                     console.log("Success: ", caq);
                     buildCard(caq);
+                    temporaryglow();
                 },
                 error: function (e) {
-                    $("#getResultDiv").html("<strong>Failed to Load Rooms</strong>");
+                    $("#coords_err").text(e.responseText);
                     console.log("ERROR: ", e);
                 }
             });
@@ -130,14 +143,23 @@ function chosenDate(){
     }
     return "";
 }
+
+
+
 function buildCard(caq){
     var components = '';
     var elem;
     for(let i=0;i<caq.components.length;i++){
         elem = caq.components[i];
-        components += "|" +  elem['name'] + " - " + elem['dayMap'][caq.date]['avg'] + "|  ";
+
+        if(Object.keys(elem['dayMap']).length>0  ){
+            components += "|" +  elem['name'] + " - " + elem['dayMap'][caq.date]['avg'] + "|  ";
+        }
     }
-    const new_card = `<div class="card text-center bgwhite2" style="margin-bottom: 20px" > 
+    if(components == ''){
+        components += "Unknown";
+    }
+    const new_card = `<div class="card text-center caq_info bgwhite" style=" margin:auto ; margin-bottom: 20px ;max-width: 700px" > 
     <div class="delete_icon">
      <i  style="color: red" class="fas fa-times-circle fa-lg"></i>
   </div>
@@ -145,11 +167,12 @@ function buildCard(caq){
             ${caq.city}
         </div>
         <div class="card-body">
-            <p class="card-title">Air Quality Indice: ${caq.date} </p>
-            <p class="card-title">Air Quality Indice: ${caq.aqi} </p>
-            <p class="card-text">Latitude: ${ Math.round(caq.latitude * 100) / 100}</p>
-            <p class="card-text">Longitude: ${Math.round(caq.longitude * 100) / 100}</p>
-            <p class="card-text">Components: ${components} </p>
+            <p class="card-title">Date: ${caq.date} </p>
+            <p class="card-title">Air Quality Indice: ${caq.aqi != "" ? caq.aqi : "Unknown" } </p>
+            <p class="card-title">Latitude: ${ Math.round(caq.latitude * 100) / 100}</p>
+            <p class="card-title">Longitude: ${Math.round(caq.longitude * 100) / 100}</p>
+            <p class="card-title">Components: ${components} </p>
+             <p class="card-title">More Info: <a href="${caq.link}"  target="_blank"> Here </a> </p>
         </div>
         <div class="card-footer text-muted">
 
@@ -161,6 +184,4 @@ function buildCard(caq){
         console.log("Inside function!")
         this.parentElement.remove();
     });
-
-
 }
