@@ -3,7 +3,9 @@
 
 ## Individual Project
   > Develop a multi-layer web application, in Spring Boot, supplied with automated tests (at multiple levels). 
+  
   > Use an External API as source of information
+  
   > Create your own API
   
 ## Theme : Air Quality 
